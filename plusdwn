@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# Function to print usage message
+usage() {
+    echo "Usage: plusdwn [-c] [-d] <link1> [<link2> ...]"
+    echo "Options:"
+    echo -e "  ${RED}-c, --crawl   ${NC}  Use hakrawler to crawl links"
+    echo -e "  ${RED}-d, --download${NC}  Download files listed in downloadlist.txt using aria2c"
+    echo -e "  ${RED}-t, --threads ${NC}  Number of threads for aria2c (default: 4)"
+    echo -e "  ${RED}-p, --path    ${NC}  Make a directory to download files into"
+    echo -e "  ${RED}-r, --remove  ${NC}  Remove the download list after running"
+    exit 1
+}
+
+# Check if no arguments are provided
+if [ $# -eq 0 ]; then
+    usage
+fi
+
+# define colours
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Colour
+
+# Initialize variables
+crawl=false
+download=false
+num_threads=4
+path=false
+removelist=false
+
+# Process command-line options
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -c|--crawl)
+            crawl=true
+            shift
+            ;;
+        -d|--download)
+            download=true
+            shift
+            ;;
+        -r|--remove)
+            removelist=true
+            shift
+            ;;
+        -t|--threads)
+	    num_threads="$2"
+            shift 2
+            ;;
+        -p|--path)
+	    path=true
+	    pathlocation="$2"
+	    shift 2
+	    ;;
+	*)
+            break
+            ;;
+    esac
+done
+
+# Create path and enter it if one is specified
+if [ "$path" == true ]; then
+	echo -e "Creating directory "$pathlocation"..."
+	mkdir -p "$pathlocation"
+	cd "$pathlocation"
+    echo -e "${GREEN}Done!${NC}"
+fi
+
+# Loop through each argument
+for link in "$@"; do
+    # Execute command with each link
+    if [ "$crawl" == true ]; then
+        echo -e "Crawling for media links in ${YELLOW}$link${NC}..."
+        echo "$link" | hakrawler | grep -E -i '/f/|/[^/]+\.(mp4|avi|mkv|mov|flv|wmv|mpg|mpeg|mp3|wav|ogg|flac|aac|m4a|wma|nfo)$' >> downloadlist.txt
+        echo -e "${GREEN}Done!${NC}"
+    else
+        echo -e "Appending ${YELLOW}"$link"${NC}..."
+        echo "$link" >> downloadlist.txt
+        echo -e "${GREEN}Done!${NC}"
+    fi
+
+done
+
+# Download files using aria2c if the download option is specified
+if [ "$download" == true ]; then
+    echo -e "Downloading crawled links with aria2c using ${YELLOW}"$num_threads"${NC} threads..."
+    aria2c -c -i downloadlist.txt -j"$num_threads"
+    echo -e "${GREEN}Finished downloading!${NC}"
+fi
+
+if [ "$removelist" == true ]; then
+    echo -e "Removing downloadlist.txt..."
+    cd "$pathlocation"
+    rm 'downloadlist.txt'
+    echo -e "${GREEN}Done!${NC}"
+fi
