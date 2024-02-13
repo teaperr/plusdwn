@@ -2,9 +2,9 @@
 
 # Function to print usage message
 usage() {
-    echo "Usage: plusdwn [-c] [-d] <link1> [<link2> ...]"
+    echo "Usage: plusdwn [-c] [-d] [-t] [-p] [-r] <link1> [<link2> ...]"
     echo "Options:"
-    echo -e "  ${RED}-c, --crawl   ${NC}  Use hakrawler to crawl links"
+    echo -e "  ${RED}-c, --crawl   ${NC}  Use hakrawler to crawl links and append them to downloadlist.txt in the current directory"
     echo -e "  ${RED}-d, --download${NC}  Download files listed in downloadlist.txt using aria2c"
     echo -e "  ${RED}-t, --threads ${NC}  Number of threads for aria2c (default: 4)"
     echo -e "  ${RED}-p, --path    ${NC}  Make a directory to download files into"
