@@ -7,7 +7,7 @@ curl -sSL https://raw.githubusercontent.com/teaperr/plusdwn/main/plusdwn -o "$in
 chmod +x "$install_dir/plusdwn"
 
 echo "" >> ~/.bashrc
-echo "export PATH="$HOME/bin:$PATH"" >> ~/.bashrc
+echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 
 echo "Installation complete. You can now use plusdwn!"
