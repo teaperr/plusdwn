@@ -86,7 +86,7 @@ done
 # Download files using aria2c if the download option is specified
 if [ "$download" == true ]; then
     echo -e "Downloading crawled links with aria2c using ${YELLOW}"$num_threads"${NC} threads..."
-    aria2c -c -i downloadlist.txt -j"$num_threads"
+    aria2c -c -i downloadlist.txt -j"$num_threads" --check-certificate=false
     echo -e "${GREEN}Finished downloading!${NC}"
 fi
 
